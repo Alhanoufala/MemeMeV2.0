@@ -168,13 +168,15 @@ class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate
     
     func save() {
         // Create the meme
-        let memedImage = generateMemedImage()
-        _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imagePickerView.image!, memedImage: memedImage)
+        let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imagePickerView.image!, memedImage:generateMemedImage())
+        
+        //Add it to the memes array on the Application Delegate
+        (UIApplication.shared.delegate as! AppDelegate).memes.append(meme)
+        
     }
     func generateMemedImage() -> UIImage {
         //Hide toolbar and navbar
-        toolBar.isHidden = true
-        navigationBar.isHidden = true
+        hideTopAndBottomBars(true)
         
         //Render view to an image
         UIGraphicsBeginImageContext(view.frame.size)
@@ -183,16 +185,22 @@ class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate
         UIGraphicsEndImageContext()
         
         //Show toolbar and navbar
-        toolBar.isHidden = false
-        navigationBar.isHidden = false
+        hideTopAndBottomBars(false)
         
         return memedImage
+    }
+    
+    //Hide toolbar and navbar
+    func hideTopAndBottomBars(_ hide: Bool) {
+        toolBar.isHidden = hide
+        navigationBar.isHidden = hide
     }
     
     //sharing a meme
     @IBAction func share(){
         let memedImage = generateMemedImage()
         let controller = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)
+        
         controller.completionWithItemsHandler = {(_, completed, _, _) in
             if completed{
                 self.save()
@@ -206,12 +214,7 @@ class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate
     
     //Cancel button (Reset)
     @IBAction func cancel(){
-        topTextField.text = "TOP"
-        bottomTextField.text = "BOTTOM"
-        shareButton.isEnabled = false
-        imagePickerView.image = nil
-        
-        
+        dismiss(animated: true, completion: nil)
         
     }
     

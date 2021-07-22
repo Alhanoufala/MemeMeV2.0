@@ -10,7 +10,6 @@ import UIKit
 struct Meme {
     
     //MARK: Properties
-    
     let topText: String!
     let bottomText: String!
     let originalImage: UIImage!
